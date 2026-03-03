@@ -148,13 +148,13 @@ def parse_operands(tokens: Iterator[Token]) -> Iterator[str]:
         elif tok.type == "ID":
             yield tok.val
         else:
-            raise SyntaxError(f"unexpected token in operands: {tok}")
+            raise SyntaxError(f"Unexpected token in operands: {tok}")
 
         tok = next(tokens, None)
         if tok is None or tok.type in ("COMM", "NL"):
             break
         if tok.type != "COM":
-            raise SyntaxError(f"expected comma, got {tok}")
+            raise SyntaxError("Expected comma")
 
 def resolve_symbols(program: list[Instruction]) -> dict[str, int]:
     lc = 0x0000
@@ -169,7 +169,7 @@ def resolve_symbols(program: list[Instruction]) -> dict[str, int]:
             lc = int(ops[0], base=0)
         elif name == '.word' or name in MNEMONICS: lc += 2
         elif name is None: continue
-        else: raise SyntaxError(f"unknown mnemonic or directive: '{name}'")
+        else: raise SyntaxError(f"Unknown mnemonic or directive: '{name}'")
 
     return sym
 
@@ -247,6 +247,9 @@ if __name__ == '__main__':
                 f.write(header)
                 f.write(data)
             
+            f.write(struct.pack(">HH", 0xFFFE, 0x0002))
+            f.write(struct.pack(">H", symbols.get('main', 0x0000))) # reset vector
+
             f.write(struct.pack(">HH", 0xFFFF, 0x0000)) # EOF
             
         print(f"\n{args.output} generated succesfully")
