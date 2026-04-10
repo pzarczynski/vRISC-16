@@ -1,0 +1,21 @@
+.org 0x0000
+sum:    # add two numbers
+        ADD r1, r1, r2
+        JMP r15
+
+.org 0x0100
+main:   
+        LHI r1, 0
+        LLI r1, 2
+
+        LHI r7, HIGH(x)
+        LLI r7, LOW(x)
+        LD  r2, [r7]
+
+        LHI r7, HIGH(sum)
+        LLI r7, LOW(sum)
+        JAL r15, r7
+        BZ  r0, -1
+
+.org 0x8000
+x:      .word 1
